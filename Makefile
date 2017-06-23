@@ -1,5 +1,5 @@
 default:
-	go build
+	go run main.go
 
 test:
 	go test ./lexer
