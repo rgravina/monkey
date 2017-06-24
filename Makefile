@@ -2,7 +2,7 @@ default:
 	go run main.go
 
 test:
-	go test ./lexer
+	go test ./lexer ./parser
 
 install:
 	go install
