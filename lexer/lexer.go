@@ -3,10 +3,10 @@ package lexer
 import "monkey/token"
 
 type Lexer struct {
-	input        string
-	position     int  // current position in input (points to current char)
-	readPosition int  // current reading position in input (after current char)
-	ch           byte // current byte
+	input             string
+	currentPosition   int
+	readAheadPosition int
+	currentChar       byte
 }
 
 func New(input string) *Lexer {
@@ -20,62 +20,61 @@ func (l *Lexer) NextToken() token.Token {
 
 	l.skipWhitespace()
 
-	switch l.ch {
+	switch l.currentChar {
 	case '=':
 		if l.peekChar() == '=' {
-			ch := l.ch
+			currentChar := l.currentChar
 			l.readChar()
-			tok = token.Token{Type: token.EQ, Literal: string(ch) + string(l.ch)}
+			tok = token.Token{Type: token.EQ, Literal: string(currentChar) + string(l.currentChar)}
 		} else {
-			tok = newToken(token.ASSIGN, l.ch)
+			tok = newToken(token.ASSIGN, l.currentChar)
 		}
 	case '+':
-		tok = newToken(token.PLUS, l.ch)
+		tok = newToken(token.PLUS, l.currentChar)
 	case '-':
-		tok = newToken(token.MINUS, l.ch)
+		tok = newToken(token.MINUS, l.currentChar)
 	case '!':
 		if l.peekChar() == '=' {
-			ch := l.ch
+			currentChar := l.currentChar
 			l.readChar()
-			tok = token.Token{Type: token.NOT_EQ, Literal: string(ch) + string(l.ch)}
+			tok = token.Token{Type: token.NOT_EQ, Literal: string(currentChar) + string(l.currentChar)}
 		} else {
-			tok = newToken(token.BANG, l.ch)
+			tok = newToken(token.BANG, l.currentChar)
 		}
 	case '/':
-		tok = newToken(token.SLASH, l.ch)
+		tok = newToken(token.SLASH, l.currentChar)
 	case '*':
-		tok = newToken(token.ASTERISK, l.ch)
+		tok = newToken(token.ASTERISK, l.currentChar)
 	case '<':
-		tok = newToken(token.LT, l.ch)
+		tok = newToken(token.LT, l.currentChar)
 	case '>':
-		tok = newToken(token.GT, l.ch)
+		tok = newToken(token.GT, l.currentChar)
 	case '(':
-		tok = newToken(token.LPAREN, l.ch)
+		tok = newToken(token.LPAREN, l.currentChar)
 	case ')':
-		tok = newToken(token.RPAREN, l.ch)
+		tok = newToken(token.RPAREN, l.currentChar)
 	case '{':
-		tok = newToken(token.LBRACE, l.ch)
+		tok = newToken(token.LBRACE, l.currentChar)
 	case '}':
-		tok = newToken(token.RBRACE, l.ch)
+		tok = newToken(token.RBRACE, l.currentChar)
 	case ',':
-		tok = newToken(token.COMMA, l.ch)
+		tok = newToken(token.COMMA, l.currentChar)
 	case ';':
-		tok = newToken(token.SEMICOLON, l.ch)
+		tok = newToken(token.SEMICOLON, l.currentChar)
 	case 0:
 		tok.Literal = ""
 		tok.Type = token.EOF
 	default:
-		if isLetter(l.ch) {
+		if isLetter(l.currentChar) {
 			tok.Literal = l.readIdentifier()
 			tok.Type = token.LookupIdent(tok.Literal)
 			return tok
-		} else if isDigit(l.ch) {
+		} else if isDigit(l.currentChar) {
 			tok.Type = token.INT
 			tok.Literal = l.readNumber()
 			return tok
-
 		} else {
-			tok = newToken(token.ILLEGAL, l.ch)
+			tok = newToken(token.ILLEGAL, l.currentChar)
 		}
 	}
 
@@ -84,11 +83,11 @@ func (l *Lexer) NextToken() token.Token {
 }
 
 func (l *Lexer) readNumber() string {
-	position := l.position
-	for (isDigit(l.ch)) {
+	position := l.currentPosition
+	for isDigit(l.currentChar) {
 		l.readChar()
 	}
-	return l.input[position:l.position]
+	return l.input[position:l.currentPosition]
 }
 
 func isDigit(ch byte) bool {
@@ -96,17 +95,17 @@ func isDigit(ch byte) bool {
 }
 
 func (l *Lexer) skipWhitespace() {
-	for l.ch == ' ' || l.ch == '\t' || l.ch == '\n' || l.ch == '\r' {
+	for l.currentChar == ' ' || l.currentChar == '\t' || l.currentChar == '\n' || l.currentChar == '\r' {
 		l.readChar()
 	}
 }
 
 func (l *Lexer) readIdentifier() string {
-	position := l.position
-	for (isLetter(l.ch)) {
+	position := l.currentPosition
+	for isLetter(l.currentChar) {
 		l.readChar()
 	}
-	return l.input[position:l.position]
+	return l.input[position:l.currentPosition]
 }
 
 func newToken(tokenType token.TokenType, ch byte) token.Token {
@@ -114,13 +113,13 @@ func newToken(tokenType token.TokenType, ch byte) token.Token {
 }
 
 func (l *Lexer) readChar() {
-	if l.readPosition >= len(l.input) {
-		l.ch = 0
+	if l.readAheadPosition >= len(l.input) {
+		l.currentChar = 0
 	} else {
-		l.ch = l.input[l.readPosition]
+		l.currentChar = l.input[l.readAheadPosition]
 	}
-	l.position = l.readPosition
-	l.readPosition += 1
+	l.currentPosition = l.readAheadPosition
+	l.readAheadPosition += 1
 }
 
 func isLetter(ch byte) bool {
@@ -128,9 +127,9 @@ func isLetter(ch byte) bool {
 }
 
 func (l *Lexer) peekChar() byte {
-	if l.readPosition >= len(l.input) {
+	if l.readAheadPosition >= len(l.input) {
 		return 0
 	} else {
-		return l.input[l.readPosition]
+		return l.input[l.readAheadPosition]
 	}
 }

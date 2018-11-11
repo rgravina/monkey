@@ -1,8 +1,8 @@
-default:
-	go run main.go
-
 test:
 	go test ./lexer ./parser
+
+run:
+	go run main.go
 
 install:
 	go install

@@ -27,7 +27,7 @@ const (
 	EQ       = "=="
 	NOT_EQ   = "!="
 
-	// delimeters
+	// delimiters
 	COMMA     = ","
 	SEMICOLON = ";"
 	LPAREN    = "("
