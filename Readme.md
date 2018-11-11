@@ -1,5 +1,5 @@
 # Monkey
 
-This is an interpreter for Monkey, a programming language introduced along with an interpreter in the book [Writing an Interpreter in Go](https://interpreterbook.com).
+This is an interpreter for Monkey, a programming language and interpreter from the book [Writing an Interpreter in Go](https://interpreterbook.com).
 
-The code here is based on the code in the book. For the most part it is the same, but I may have made small changes.
+The code here I have entered as I worked through the book, but I've also made small refactorings which helped me to understand it better. For the original source, refer to the book.
