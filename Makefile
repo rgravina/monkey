@@ -1,5 +1,5 @@
 test:
-	go test ./lexer ./parser ./ast
+	go test ./lexer ./parser ./ast ./object
 
 run:
 	go run main.go
