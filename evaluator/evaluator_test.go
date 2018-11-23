@@ -39,7 +39,7 @@ func testEval(input string) object.Object {
 func testIntegerObject(t *testing.T, obj object.Object, expected int64) {
 	result, ok := obj.(*object.Integer)
 	if !ok {
-		t.Fatalf("obj is not an integer")
+		t.Fatalf("obj is not an integer, got=%s", obj.Inspect())
 	}
 	if result.Value != expected {
 		t.Fatalf("unexpected integer.Value, expected=%d, got=%s", expected, obj.Inspect())
@@ -238,4 +238,32 @@ func TestFunctionObject(t *testing.T) {
 	if fn.Body.String() != "(x + 2)" {
 		t.Fatalf("body incorrect")
 	}
+}
+
+func TestFunctionApplication(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected int64
+	}{
+		{"let identity = fn(x) { x; }; identity(5);", 5},
+		{"let add = fn(x, y) { return x + y; }; add(1 + 1, 3);", 5},
+		{"fn(x) { x; }(5);", 5},
+	}
+
+	for _, tt := range tests {
+		evaluated := testEval(tt.input)
+		testIntegerObject(t, evaluated, tt.expected)
+	}
+}
+
+func TestClosures(t *testing.T) {
+	input := `
+let newAdder = fn(x) {
+	fn(y) { x + y; };
+};
+
+let addTwo = newAdder(2);
+addTwo(2);
+`
+	testIntegerObject(t, testEval(input), 4)
 }
