@@ -41,7 +41,7 @@ func testIntegerObject(t *testing.T, obj object.Object, expected int64) {
 		t.Fatalf("obj is not an integer")
 	}
 	if result.Value != expected {
-		t.Fatalf("unexpected value")
+		t.Fatalf("unexpected integer.Value, expected=%d, got=%s", expected, obj.Inspect())
 	}
 }
 
@@ -143,6 +143,7 @@ func TestEvalReturnStatements(t *testing.T) {
 		{"return 10; 9;", 10},
 		{"return 2 * 5; 9;", 10},
 		{"9; return 2 * 5; 9;", 10},
+		{`if (true) { if (true) { return 10; } return 1; }`, 10},
 	}
 
 	for _, tt := range tests {
