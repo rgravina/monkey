@@ -297,3 +297,33 @@ func TestStringConcatenation(t *testing.T) {
 		t.Fatalf("value incorrect")
 	}
 }
+
+
+func TestBuiltinFunctions(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected interface{}
+	}{
+		{`len("")`, 0},
+		{`len("a")`, 1},
+		{`len("aa")`, 2},
+		{`len(1)`, "argument to `len` not supported, got INTEGER"},
+		{`len("one", "two")`, "`len` takes one argument"},
+	}
+
+	for _, tt := range tests {
+		evaluated := testEval(tt.input)
+		switch expected := tt.expected.(type) {
+		case int:
+			testIntegerObject(t, evaluated, int64(expected))
+		case string:
+			errObj, ok := evaluated.(*object.Error)
+			if !ok {
+				t.Fatalf("not an error object")
+			}
+			if errObj.Message != tt.expected {
+				t.Fatalf("wrong error message")
+			}
+		}
+	}
+}
