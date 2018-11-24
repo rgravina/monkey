@@ -190,6 +190,10 @@ func TestErrorHandling(t *testing.T) {
 			"a",
 			"identifier not found: a",
 		},
+		{
+			`"a" - "a"`,
+			"unknown operator: STRING - STRING",
+		},
 	}
 
 	for _, tt := range tests {
@@ -275,6 +279,19 @@ func TestStringLiteral(t *testing.T) {
 	str, ok := evaluated.(*object.String)
 	if !ok {
 		t.Fatalf("not a string")
+	}
+	if str.Value != "Hello World!" {
+		t.Fatalf("value incorrect")
+	}
+}
+
+func TestStringConcatenation(t *testing.T) {
+	input := `"Hello" + " " + "World!"`
+
+	evaluated := testEval(input)
+	str, ok := evaluated.(*object.String)
+	if !ok {
+		t.Fatalf("not a string, got=%t", evaluated)
 	}
 	if str.Value != "Hello World!" {
 		t.Fatalf("value incorrect")

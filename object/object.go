@@ -16,7 +16,7 @@ const (
 	RETURN_VALUE_OBJ = "RETURN_VALUE"
 	ERROR_OBJ        = "ERROR_OBJ"
 	FUNCTION_OBJ     = "FUNCTION_OBJ"
-	STRING_OBJ       = "STRING_OBJ"
+	STRING_OBJ       = "STRING"
 )
 
 type Object interface {
