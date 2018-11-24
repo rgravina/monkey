@@ -545,3 +545,21 @@ func TestOperatorPrecedenceParsing(t *testing.T) {
 		}
 	}
 }
+
+func TestStringLiteralExpressions(t *testing.T) {
+	input := `"hello world";`
+	l := lexer.New(input)
+	p := New(l)
+
+	program := p.ParseProgram()
+	checkParserErrors(t, p)
+
+	stmt := program.Statements[0].(*ast.ExpressionStatement)
+	literal, ok := stmt.Expression.(*ast.StringLiteral)
+	if !ok {
+		t.Fatalf("not a string literal")
+	}
+	if literal.Value != "hello world" {
+		t.Fatalf("incorrect value")
+	}
+}

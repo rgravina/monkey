@@ -137,10 +137,11 @@ func (li *IntegerLiteral) String() string {
 }
 
 type PrefixExpression struct {
-	Token token.Token
+	Token    token.Token
 	Operator string
-	Right Expression
+	Right    Expression
 }
+
 func (pe *PrefixExpression) expressionNode() {}
 func (pe *PrefixExpression) TokenLiteral() string {
 	return pe.Token.Literal
@@ -157,11 +158,12 @@ func (pe *PrefixExpression) String() string {
 }
 
 type InfixExpression struct {
-	Token token.Token
-	Left Expression
+	Token    token.Token
+	Left     Expression
 	Operator string
-	Right Expression
+	Right    Expression
 }
+
 func (ie *InfixExpression) expressionNode() {}
 func (ie *InfixExpression) TokenLiteral() string {
 	return ie.Token.Literal
@@ -182,6 +184,7 @@ type Boolean struct {
 	Token token.Token
 	Value bool
 }
+
 func (b *Boolean) expressionNode() {}
 func (b *Boolean) TokenLiteral() string {
 	return b.Token.Literal
@@ -191,11 +194,12 @@ func (b *Boolean) String() string {
 }
 
 type IfExpression struct {
-	Token token.Token
-	Condition Expression
+	Token       token.Token
+	Condition   Expression
 	Consequence *BlockStatement
 	Alternative *BlockStatement
 }
+
 func (ie *IfExpression) expressionNode() {}
 func (ie *IfExpression) TokenLiteral() string {
 	return ie.Token.Literal
@@ -217,7 +221,7 @@ func (ie *IfExpression) String() string {
 }
 
 type BlockStatement struct {
-	Token token.Token
+	Token      token.Token
 	Statements []Statement
 }
 
@@ -236,10 +240,11 @@ func (bs *BlockStatement) String() string {
 }
 
 type FunctionLiteral struct {
-	Token token.Token
+	Token      token.Token
 	Parameters []*Identifier
-	Body *BlockStatement
+	Body       *BlockStatement
 }
+
 func (fl *FunctionLiteral) expressionNode() {}
 func (fl *FunctionLiteral) TokenLiteral() string {
 	return fl.Token.Literal
@@ -261,10 +266,11 @@ func (fl *FunctionLiteral) String() string {
 }
 
 type CallExpression struct {
-	Token token.Token
-	Function Expression
+	Token     token.Token
+	Function  Expression
 	Arguments []Expression
 }
+
 func (ce *CallExpression) expressionNode() {}
 func (ce *CallExpression) TokenLiteral() string {
 	return ce.Token.Literal
@@ -282,4 +288,18 @@ func (ce *CallExpression) String() string {
 	out.WriteString(")")
 
 	return out.String()
+}
+
+type StringLiteral struct {
+	Token token.Token
+	Value string
+}
+
+func (sl *StringLiteral) expressionNode() {}
+
+func (sl *StringLiteral) TokenLiteral() string {
+	return sl.Token.Literal
+}
+func (sl *StringLiteral) String() string {
+	return sl.Token.Literal
 }
