@@ -317,6 +317,9 @@ func TestBuiltinFunctions(t *testing.T) {
 		{`last([])`, nil},
 		{`last([1])`, 1},
 		{`last([1, 2])`, 2},
+		//{`rest([])`, []int{}},
+		{`rest([1])`, []int{}},
+		{`rest([1, 2])`, []int{2}},
 	}
 
 	for _, tt := range tests {
@@ -331,6 +334,17 @@ func TestBuiltinFunctions(t *testing.T) {
 			}
 			if errObj.Message != tt.expected {
 				t.Fatalf("wrong error message")
+			}
+		case []int:
+			result, ok := evaluated.(*object.Array)
+			if !ok {
+				t.Fatalf("obj is not an array, got=%s", result.Inspect())
+			}
+			for _, e := range result.Elements {
+				integer := e.(*object.Integer)
+				if integer.Value != int64(expected[0]) {
+					t.Fatalf("unexpected value, wanted=%d got=%d", integer.Value, integer)
+				}
 			}
 		}
 	}
