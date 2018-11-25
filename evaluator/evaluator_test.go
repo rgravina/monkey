@@ -308,6 +308,9 @@ func TestBuiltinFunctions(t *testing.T) {
 		{`len("aa")`, 2},
 		{`len(1)`, "argument to `len` not supported, got INTEGER"},
 		{`len("one", "two")`, "`len` takes one argument"},
+		{`len([])`, 0},
+		{`len([1])`, 1},
+		{`len([1, 2])`, 2},
 	}
 
 	for _, tt := range tests {
