@@ -317,7 +317,7 @@ func TestBuiltinFunctions(t *testing.T) {
 		{`last([])`, nil},
 		{`last([1])`, 1},
 		{`last([1, 2])`, 2},
-		//{`rest([])`, []int{}},
+		{`rest([])`, nil},
 		{`rest([1])`, []int{}},
 		{`rest([1, 2])`, []int{2}},
 	}
