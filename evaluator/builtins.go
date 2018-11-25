@@ -19,4 +19,19 @@ var builtins = map[string]*object.Builtin{
 			return NULL
 		},
 	},
+	"first": &object.Builtin{
+		Fn: func(args ...object.Object) object.Object {
+			if len(args) != 1 {
+				return newError("`first` takes one argument")
+			}
+			if args[0].Type() != object.ARRAY_OBJ {
+				return newError("`first` takes an array")
+			}
+			arr := args[0].(*object.Array)
+			if len(arr.Elements) > 0 {
+				return arr.Elements[0]
+			}
+			return NULL
+		},
+	},
 }
