@@ -17,6 +17,7 @@ const (
 	PRODUCT      // *
 	PREFIX       // -X or !X
 	CALL         // myFunction(x)
+	INDEX        // array[index]
 )
 
 var precedences = map[token.TokenType]int{
@@ -29,6 +30,7 @@ var precedences = map[token.TokenType]int{
 	token.SLASH:    PRODUCT,
 	token.ASTERISK: PRODUCT,
 	token.LPAREN:   CALL,
+	token.LBRACKET: INDEX,
 }
 
 type (
@@ -37,12 +39,12 @@ type (
 )
 
 type Parser struct {
-	l                 *lexer.Lexer
-	currToken         token.Token
-	peekToken         token.Token
-	errors            []string
-	prefixParseFns    map[token.TokenType]prefixParseFn
-	infixParseFns     map[token.TokenType]infixParseFn
+	l              *lexer.Lexer
+	currToken      token.Token
+	peekToken      token.Token
+	errors         []string
+	prefixParseFns map[token.TokenType]prefixParseFn
+	infixParseFns  map[token.TokenType]infixParseFn
 }
 
 func New(l *lexer.Lexer) *Parser {
@@ -69,6 +71,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerInfix(token.LT, p.parseInfixExpression)
 	p.registerInfix(token.GT, p.parseInfixExpression)
 	p.registerInfix(token.LPAREN, p.parseCallExpression)
+	p.registerInfix(token.LBRACKET, p.parseIndexExpression)
 	// read two tokens so currToken and peekToken are both set
 	p.nextToken()
 	p.nextToken()
@@ -393,4 +396,14 @@ func (p *Parser) parseArrayLiteral() ast.Expression {
 	array := &ast.ArrayLiteral{Token: p.currToken}
 	array.Elements = p.parseExpressionList(token.RBRACKET)
 	return array
+}
+
+func (p *Parser) parseIndexExpression(left ast.Expression) ast.Expression {
+	exp := &ast.IndexExpression{Token: p.currToken, Left: left}
+	p.nextToken()
+	exp.Index = p.parseExpression(LOWEST)
+	if !p.expectPeek(token.RBRACKET) {
+		return nil
+	}
+	return exp
 }
