@@ -194,6 +194,10 @@ func TestErrorHandling(t *testing.T) {
 			`"a" - "a"`,
 			"unknown operator: STRING - STRING",
 		},
+		{
+			`{"a": 1}[fn(a){a}]`,
+			"unusable as hash key: FUNCTION",
+		},
 	}
 
 	for _, tt := range tests {
@@ -424,5 +428,26 @@ func TestHashLiterals(t *testing.T) {
 			t.Fatalf("No pair for given key in Paira")
 		}
 		testIntegerObject(t, pair.Value, expectedValue)
+	}
+}
+
+func TestHashLiteralExpression(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected interface{}
+	}{
+		{`{"a": 5}["a"]`, 5},
+		{`{"a": 5}["b"]`, nil},
+		{`let key = "a"; {"a": 5}[key]`, 5},
+	}
+
+	for _, tt := range tests {
+		evaluated := testEval(tt.input)
+		integer, ok := tt.expected.(int)
+		if ok {
+			testIntegerObject(t, evaluated, int64(integer))
+		} else {
+			testNullObject(t, evaluated)
+		}
 	}
 }
